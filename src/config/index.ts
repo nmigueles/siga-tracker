@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from "@hapi/joi";
 
 import * as env from "dotenv";
 env.config();
@@ -11,7 +11,7 @@ const options = {
 
 const schema = Joi.object(options).unknown(true);
 
-const { error, value: config } = Joi.validate(process.env, schema);
+const { error, value: config } = schema.validate(process.env);
 
 if (error) {
   console.error("Missing property in config.", error.message);

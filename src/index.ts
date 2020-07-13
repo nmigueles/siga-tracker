@@ -1,6 +1,8 @@
 import { CronJob } from "cron";
 import sigaScraper from "siga-scraper";
 import { Course, Nota, Notas as ANotas } from "siga-scraper/dist/interfaces";
+// @ts-ignore
+import Logger from "simple-node-logger";
 
 import config from "./config";
 
@@ -11,6 +13,9 @@ import compararNotas from "./helpers/compararNotas";
 import triggerEvent from "./helpers/triggerEvent";
 
 import eventName from "./constants/events";
+
+// Handle logs
+const log = Logger.createSimpleLogger("tracker.log");
 
 // Temp. debería ir en la configuración o algo.
 const { WEBHOOK_URL_NEW_COURSE, WEBHOOK_URL_NEW_GRADE } = process.env;
@@ -94,9 +99,8 @@ async function trackNotas() {
   await sigaScraper.stop();
 }
 
-const notasCronJob = new CronJob("0 */30 * * * *", function () {
-  const d = new Date();
-  console.log(`[${d}] ⏱`, "Tracking Notas.");
+const notasCronJob = new CronJob("0 */10 * * * *", () => {
+  log.info("Running tracker at ", new Date().toJSON());
   trackNotas();
 });
 

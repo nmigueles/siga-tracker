@@ -52,7 +52,8 @@
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "mongoose": "^5.9.22",
-    "siga-scraper": "^1.4.0"
+    "siga-scraper": "^1.4.0",
+    "simple-node-logger": "^18.12.24"
   },
   "bugs": {
     "url": "https://github.com/NicoMigueles/siga-tracker/issues"

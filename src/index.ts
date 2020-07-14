@@ -108,7 +108,8 @@ async function trackNotas() {
   await sigaScraper.stop();
 }
 
-const notasCronJob = new CronJob("0 */5 * * * *", () => {
+// Correrlo cada hora, entre las 7 a las 23 hs.
+const notasCronJob = new CronJob("0 7-23 * * *", () => {
   log.info("Running tracker at ", new Date().toJSON());
   trackNotas();
 });

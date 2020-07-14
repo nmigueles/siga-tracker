@@ -18,10 +18,10 @@ services:
       - ./:/usr/src/app:cached
       - npm_cache:/root/.npm:delegated
       - node_modules:/app/node_modules:delegated
-    env_file:
-      - .env
     environment:
-      - MONGO_URI=mongodb://db:27017/siga-tracker
+      - MONGO_URI=${MONGO_URI}
+      - USER=${USER}
+      - PASS=${PASS}
     links:
       - db
 

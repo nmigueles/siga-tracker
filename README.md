@@ -67,12 +67,9 @@ Nombre del evento: `new-grade`
 ## Como usarlo
 
 ```bash
-npm i
-cp .env.sample .env # Cambiar valores del .env.
-npm run build # Compilar el Typescript.
-npm start # Inicia el tracker.
-
-# npm run build:start # Compila e inicia en un paso. Útil para dev.
+cp .env.sample .env
+# Cambiar valores del .env.
+docker-compose up
 ```
 
 ## Configuración en .env

@@ -17,8 +17,11 @@ import eventName from "./constants/events";
 // Handle logs
 const log = Logger.createSimpleLogger("tracker.log");
 
-// Temp. debería ir en la configuración o algo.
-const { WEBHOOK_URL_NEW_COURSE, WEBHOOK_URL_NEW_GRADE } = process.env;
+const {
+  CHROMIUM_PATH,
+  WEBHOOK_URL_NEW_COURSE,
+  WEBHOOK_URL_NEW_GRADE,
+} = process.env;
 
 async function trackNotas() {
   const notas = await Notas.find({});
@@ -31,7 +34,11 @@ async function trackNotas() {
     {}
   );
 
-  await sigaScraper.start();
+  await sigaScraper.start({
+    headless: true,
+    executablePath: CHROMIUM_PATH,
+    args: ["--no-sandbox"],
+  });
   await sigaScraper.login(config.USER!, config.PASS!);
 
   const responseNotas: ANotas[] = await sigaScraper.scrapeNotas();
@@ -44,6 +51,7 @@ async function trackNotas() {
       const nuevasNotas: Nota[] = compararNotas(asignaturaInDb.notas, notas);
 
       if (nuevasNotas.length) {
+        log.info("Se detectaron nuevas notas.");
         const data = {
           courseId,
           name,
@@ -63,12 +71,13 @@ async function trackNotas() {
       try {
         await new Notas({ courseId, notas }).save();
       } catch {
-        console.error(`Error guardando ${courseId} en la db.`);
+        log.error(`Error guardando ${courseId} en la db.`);
       }
     }
   }
 
   if (idAsignaturasNuevas.length) {
+    log.info("Se detectaron nuevas asignaturas.");
     const asignaturasNuevas: Course[] = [];
     // Busco más información sobre las asignaturas nuevas para enviarla en el evento.
     const responseCursada = await sigaScraper.scrapeCursada();
@@ -85,7 +94,7 @@ async function trackNotas() {
         asignatura.aula = asignatura.aula || "sin definir";
         asignaturasNuevas.push(asignatura);
       } else {
-        console.error(`Asignatura no encontrada ${id}.`);
+        log.error(`Asignatura no encontrada ${id}.`);
       }
     });
     // Enviar los eventos al webhook.
@@ -99,7 +108,7 @@ async function trackNotas() {
   await sigaScraper.stop();
 }
 
-const notasCronJob = new CronJob("0 */10 * * * *", () => {
+const notasCronJob = new CronJob("0 */5 * * * *", () => {
   log.info("Running tracker at ", new Date().toJSON());
   trackNotas();
 });

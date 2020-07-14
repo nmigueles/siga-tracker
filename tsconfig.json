@@ -4,11 +4,11 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "./dist",
-	"removeComments": true,
+    "removeComments": true,
     "strict": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["./src*.test.ts", "node_modules", "./dist/"]
+  "exclude": ["./src/*/*.test.ts", "node_modules", "./dist/"]
 }

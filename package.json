@@ -8,8 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "build:run": "tsc & node dist/",
+    "build": "tsc --build tsconfig.json",
     "start": "node dist/",
     "dev": "nodemon --watch src --delay 1 --exec ts-node src/index.ts",
     "test": "jest --detectOpenHandles --forceExit --verbose"
@@ -52,7 +51,7 @@
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "mongoose": "^5.9.22",
-    "siga-scraper": "^1.4.0",
+    "siga-scraper": "^1.4.1",
     "simple-node-logger": "^18.12.24"
   },
   "bugs": {

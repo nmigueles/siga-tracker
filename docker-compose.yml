@@ -1,0 +1,31 @@
+version: "3.7"
+services:
+  db:
+    image: mongo:4
+    restart: always
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - 27018:27017
+
+  app:
+    image: siga-tracker
+    build: .
+    restart: on-failure
+    depends_on:
+      - db
+    volumes:
+      - ./:/usr/src/app:cached
+      - npm_cache:/root/.npm:delegated
+      - node_modules:/app/node_modules:delegated
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://db:27017/siga-tracker
+    links:
+      - db
+
+volumes:
+  npm_cache:
+  node_modules:
+  mongodb:

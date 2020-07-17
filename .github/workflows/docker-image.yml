@@ -19,4 +19,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           repository: nicomigueles/siga-tracker/siga-tracker
+          dockerfile: prod.dockerfile
           tag_with_ref: true

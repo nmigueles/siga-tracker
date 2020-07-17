@@ -2,6 +2,7 @@ version: "3.7"
 services:
   db:
     image: mongo:4
+    container_name: siga-tracker-db
     restart: always
     volumes:
       - mongodb:/data/db
@@ -9,11 +10,8 @@ services:
       - 27018:27017
 
   app:
-    image: siga-tracker
-    container_name: siga-tracker-prod
-    build:
-      dockerfile: prod.dockerfile
-      context: .
+    image: docker.pkg.github.com/nicomigueles/siga-tracker/siga-tracker:latest
+    container_name: siga-tracker-deamon
     restart: on-failure
     depends_on:
       - db

@@ -1,8 +1,6 @@
 import { CronJob } from "cron";
 import sigaScraper from "siga-scraper";
 import { Course, Nota, Notas as ANotas } from "siga-scraper/dist/interfaces";
-// @ts-ignore
-import Logger from "simple-node-logger";
 
 import config from "./config";
 
@@ -13,9 +11,6 @@ import compararNotas from "./helpers/compararNotas";
 import triggerEvent from "./helpers/triggerEvent";
 
 import eventName from "./constants/events";
-
-// Handle logs
-const log = Logger.createSimpleLogger("tracker.log");
 
 const {
   CHROMIUM_PATH,
@@ -51,7 +46,7 @@ async function trackNotas() {
       const nuevasNotas: Nota[] = compararNotas(asignaturaInDb.notas, notas);
 
       if (nuevasNotas.length) {
-        log.info("Se detectaron nuevas notas.");
+        console.log("Se detectaron nuevas notas.");
         const data = {
           courseId,
           name,
@@ -71,13 +66,13 @@ async function trackNotas() {
       try {
         await new Notas({ courseId, notas }).save();
       } catch {
-        log.error(`Error guardando ${courseId} en la db.`);
+        console.log(`Error guardando ${courseId} en la db.`);
       }
     }
   }
 
   if (idAsignaturasNuevas.length) {
-    log.info("Se detectaron nuevas asignaturas.");
+    console.log("Se detectaron nuevas asignaturas.");
     const asignaturasNuevas: Course[] = [];
     // Busco más información sobre las asignaturas nuevas para enviarla en el evento.
     const responseCursada = await sigaScraper.scrapeCursada();
@@ -94,7 +89,7 @@ async function trackNotas() {
         asignatura.aula = asignatura.aula || "sin definir";
         asignaturasNuevas.push(asignatura);
       } else {
-        log.error(`Asignatura no encontrada ${id}.`);
+        console.error(`Asignatura no encontrada ${id}.`);
       }
     });
     // Enviar los eventos al webhook.
@@ -112,7 +107,7 @@ async function trackNotas() {
 const notasCronJob = new CronJob(
   "0 07-23 * * *",
   () => {
-    log.info("Running tracker at ", new Date().toJSON());
+    console.log("Running tracker at ", new Date().toJSON());
     trackNotas();
     console.log("Next run: ", notasCronJob.nextDates().toLocaleString());
   },

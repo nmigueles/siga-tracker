@@ -8,7 +8,7 @@ import { trackNotas } from "./trackers";
 const notasCronJob = new CronJob(
   "*/30 07-23 * * *",
   () => {
-    console.log("Running tracker at ", new Date().toJSON());
+    console.log("Running tracker at ", new Date().toLocaleString());
     trackNotas();
     console.log("Next run: ", notasCronJob.nextDates().toLocaleString());
   },

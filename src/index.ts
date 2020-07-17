@@ -109,9 +109,18 @@ async function trackNotas() {
 }
 
 // Correrlo cada hora, entre las 7 a las 23 hs.
-const notasCronJob = new CronJob("0 7-23 * * *", () => {
-  log.info("Running tracker at ", new Date().toJSON());
-  trackNotas();
-});
+const notasCronJob = new CronJob(
+  "0 07-23 * * *",
+  () => {
+    log.info("Running tracker at ", new Date().toJSON());
+    trackNotas();
+    console.log("Next run: ", notasCronJob.nextDates().toLocaleString());
+  },
+  null,
+  true,
+  "America/Buenos_Aires"
+);
 
-notasCronJob.start();
+console.log(
+  notasCronJob.running ? "[INFO] Job started" : "[ALERT] Job does not started"
+);

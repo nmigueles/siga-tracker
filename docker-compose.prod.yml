@@ -10,8 +10,9 @@ services:
 
   app:
     image: siga-tracker
+    container_name: siga-tracker-prod
     build:
-      dockerfile: dev.dockerfile
+      dockerfile: prod.dockerfile
       context: .
     restart: on-failure
     depends_on:

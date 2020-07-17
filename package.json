@@ -1,6 +1,6 @@
 {
   "name": "siga-tracker",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Deamon tool para notificar cambios en el SIGA FRBA UTN.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

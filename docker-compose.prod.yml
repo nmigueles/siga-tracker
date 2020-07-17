@@ -10,7 +10,7 @@ services:
       - 27018:27017
 
   app:
-    image: docker.pkg.github.com/nicomigueles/siga-tracker/siga-tracker:latest
+    image: docker.pkg.github.com/nicomigueles/siga-tracker/siga-tracker
     container_name: siga-tracker-deamon
     restart: on-failure
     depends_on:

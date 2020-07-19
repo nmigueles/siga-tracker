@@ -1,8 +1,5 @@
 import Joi from "@hapi/joi";
 
-import * as env from "dotenv";
-env.config();
-
 const options = {
   MONGO_URI: Joi.string().required(),
   USER: Joi.string().required(),

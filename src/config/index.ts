@@ -4,6 +4,10 @@ const options = {
   MONGO_URI: Joi.string().required(),
   USER: Joi.string().required(),
   PASS: Joi.string().required(),
+  CHROMIUM_PATH: Joi.string(),
+  WEBHOOK_URL_NEW_COURSE: Joi.string(),
+  WEBHOOK_URL_NEW_GRADE: Joi.string(),
+  WEBHOOK_DISCORD: Joi.string(),
 };
 
 const schema = Joi.object(options).unknown(true);

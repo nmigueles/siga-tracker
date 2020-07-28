@@ -19,5 +19,8 @@ services:
       - MONGO_URI=${MONGO_URI}
       - USER=${USER}
       - PASS=${PASS}
+      - WEBHOOK_URL_NEW_COURSE=${WEBHOOK_URL_NEW_COURSE}
+      - WEBHOOK_URL_NEW_GRADE=${WEBHOOK_URL_NEW_GRADE}
+      - WEBHOOK_DISCORD=${WEBHOOK_DISCORD}
     links:
       - db

@@ -1,4 +1,4 @@
-export default {
-  newGrade: "new-grade",
-  newCourse: "new-course",
-};
+export default interface Events {
+  "new-grade": undefined;
+  "new-course": undefined;
+}

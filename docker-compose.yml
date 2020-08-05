@@ -4,7 +4,7 @@ services:
     image: mongo:4
     restart: always
     volumes:
-      - ./docker-data/db:/data/db
+      - mongodb:/data/db
     ports:
       - 27018:27017
 
@@ -24,8 +24,7 @@ services:
       - MONGO_URI=${MONGO_URI}
       - USER=${USER}
       - PASS=${PASS}
-      - WEBHOOK_URL_NEW_COURSE=${WEBHOOK_URL_NEW_COURSE}
-      - WEBHOOK_URL_NEW_GRADE=${WEBHOOK_URL_NEW_GRADE}
+      - WEBHOOK_SIGA_PLUS=${WEBHOOK_SIGA_PLUS}
       - WEBHOOK_DISCORD=${WEBHOOK_DISCORD}
     links:
       - db
@@ -33,3 +32,4 @@ services:
 volumes:
   npm_cache:
   node_modules:
+  mongodb:

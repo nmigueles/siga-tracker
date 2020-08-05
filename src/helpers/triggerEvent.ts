@@ -1,6 +1,9 @@
 import Axios from "axios";
 import sendDiscordMessage from "./sendDiscordMessage";
 
+/**
+ * Envia un evento al backend de la app SIGA Plus
+ */
 export default async function triggerEvent(
   webhook: string,
   event: string,
@@ -8,6 +11,7 @@ export default async function triggerEvent(
   extraData?: any
 ): Promise<void> {
   try {
+    console.log("Triggering event to siga plus tracker api");
     await Axios.post(
       webhook,
       {
@@ -19,9 +23,10 @@ export default async function triggerEvent(
         responseType: "json",
       }
     );
-    sendDiscordMessage(`Event Fired: ${event}`);
   } catch (error) {
-    console.error(error.message);
-    console.error(error.response.data);
+    console.log(JSON.stringify(error));
+    sendDiscordMessage(
+      `Error al disparar un evento, ${error.message} - ${error.response.data.error.message}`
+    );
   }
 }

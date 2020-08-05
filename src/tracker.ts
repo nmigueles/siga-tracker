@@ -5,14 +5,27 @@ import config from "./config";
 
 import Notas, { INota } from "./models/notas";
 import compararNotas from "./helpers/compararNotas";
-import triggerEvent from "./helpers/triggerEvent";
 
-import events from "./constants/events";
+import { Events } from "./constants";
 
-type OnErrorCallback = (error: Error) => void;
+export interface Event {
+  name: keyof Events;
+  data: object;
+}
 
-export async function trackNotas(onError?: OnErrorCallback) {
+export interface TrackerOptions {
+  onError?: (error: Error) => void;
+  onEventFired?: (data: Event) => void;
+  onRun?: () => void;
+}
+
+export async function trackNotas({
+  onError,
+  onEventFired,
+  onRun,
+}: TrackerOptions) {
   try {
+    if (onRun) onRun();
     const notas = await Notas.find({});
     // Indexo para buscar por id más rápido.
     const notasById: { [key: string]: INota } = notas.reduce(
@@ -33,15 +46,14 @@ export async function trackNotas(onError?: OnErrorCallback) {
     const responseNotas: ANotas[] = await sigaScraper.scrapeNotas();
 
     const idAsignaturasNuevas: string[] = [];
-
+    const grades: ANotas[] = [];
     for await (const { courseId, notas, name } of responseNotas) {
       const asignaturaInDb = notasById[courseId];
       if (asignaturaInDb) {
         const nuevasNotas: Nota[] = compararNotas(asignaturaInDb.notas, notas);
 
         if (nuevasNotas.length) {
-          console.log("Se detectaron nuevas notas.");
-          const data = {
+          const data: ANotas = {
             courseId,
             name,
             notas: nuevasNotas,
@@ -49,28 +61,21 @@ export async function trackNotas(onError?: OnErrorCallback) {
 
           //Guardar en la db del tracker.
           asignaturaInDb.notas = [...asignaturaInDb.notas, ...nuevasNotas];
-          asignaturaInDb.save();
-
-          // Enviar los eventos al webhook.
-          await triggerEvent(
-            config.WEBHOOK_URL_NEW_GRADE,
-            events.newGrade,
-            data
-          );
+          await asignaturaInDb.save();
+          grades.push(data);
         }
       } else {
         // No estaba guardada en la db, por lo tanto es una nueva asignatura.
         idAsignaturasNuevas.push(courseId);
-        try {
-          await new Notas({ courseId, notas }).save();
-        } catch {
-          throw new Error(`Error guardando ${courseId} en la db.`);
-        }
+        await new Notas({ courseId, notas }).save();
       }
     }
 
+    if (grades.length) {
+      if (onEventFired) onEventFired({ name: "new-grade", data: { grades } });
+    }
+
     if (idAsignaturasNuevas.length) {
-      console.log("Se detectaron nuevas asignaturas.");
       const asignaturasNuevas: Course[] = [];
       // Busco más información sobre las asignaturas nuevas para enviarla en el evento.
       const responseCursada = await sigaScraper.scrapeCursada();
@@ -90,12 +95,13 @@ export async function trackNotas(onError?: OnErrorCallback) {
           throw new Error(`Asignatura no encontrada ${id}.`);
         }
       });
-      // Enviar los eventos al webhook.
-      await triggerEvent(
-        config.WEBHOOK_URL_NEW_COURSE,
-        events.newCourse,
-        asignaturasNuevas
-      );
+
+      if (onEventFired) {
+        onEventFired({
+          name: "new-course",
+          data: { courses: asignaturasNuevas },
+        });
+      }
     }
 
     await sigaScraper.stop();

@@ -29,7 +29,7 @@ const onRun = (): void => {
 
 // Correrlo cada hora, entre las 7 a las 23 hs.
 const TrackerCronJob = new CronJob(
-  "*/5 07-23 * * *",
+  "*/15 07-23 * * *",
   () => {
     trackNotas({ onError, onEventFired, onRun });
   },

@@ -47,32 +47,29 @@ export async function trackNotas({
 
     const idAsignaturasNuevas: string[] = [];
     const grades: ANotas[] = [];
+
     for await (const { courseId, notas, name } of responseNotas) {
-      const asignaturaInDb = notasById[courseId];
-      if (asignaturaInDb) {
-        const nuevasNotas: Nota[] = compararNotas(asignaturaInDb.notas, notas);
-
-        if (nuevasNotas.length) {
-          const data: ANotas = {
-            courseId,
-            name,
-            notas: nuevasNotas,
-          };
-
-          //Guardar en la db del tracker.
-          asignaturaInDb.notas = [...asignaturaInDb.notas, ...nuevasNotas];
-          await asignaturaInDb.save();
-          grades.push(data);
-        }
-      } else {
+      let asignaturaInDb = notasById[courseId];
+      if (!asignaturaInDb) {
         // No estaba guardada en la db, por lo tanto es una nueva asignatura.
         idAsignaturasNuevas.push(courseId);
-        await new Notas({ courseId, notas }).save();
+        asignaturaInDb = await new Notas({ courseId, notas: [] }).save();
       }
-    }
 
-    if (grades.length) {
-      if (onEventFired) onEventFired({ name: "new-grade", data: { grades } });
+      const nuevasNotas: Nota[] = compararNotas(asignaturaInDb.notas, notas);
+
+      if (nuevasNotas.length) {
+        const data: ANotas = {
+          courseId,
+          name,
+          notas: nuevasNotas,
+        };
+
+        //Guardar en la db del tracker.
+        asignaturaInDb.notas = [...asignaturaInDb.notas, ...nuevasNotas];
+        await asignaturaInDb.save();
+        grades.push(data);
+      }
     }
 
     if (idAsignaturasNuevas.length) {
@@ -102,6 +99,10 @@ export async function trackNotas({
           data: { courses: asignaturasNuevas },
         });
       }
+    }
+
+    if (grades.length) {
+      if (onEventFired) onEventFired({ name: "new-grade", data: { grades } });
     }
 
     await sigaScraper.stop();

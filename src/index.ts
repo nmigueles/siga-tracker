@@ -17,7 +17,7 @@ const onError = (error: Error): void => {
 
 const onEventFired = (event: Event): void => {
   // Cuando se detecta un nuevo evento se ejecuta este callback.
-  console.log("Se detectó un nuevo evento", { event });
+  console.log("Se detectó un nuevo evento", event.name);
   triggerEvent(config.WEBHOOK_SIGA_PLUS, event.name, event.data);
   sendDiscordMessage(`Evento detectado: ${event.name}`);
 };

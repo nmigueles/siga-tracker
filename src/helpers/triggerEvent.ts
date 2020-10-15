@@ -11,7 +11,6 @@ export default async function triggerEvent(
   extraData?: any
 ): Promise<void> {
   try {
-    console.log("Triggering event to siga plus tracker api");
     await Axios.post(
       webhook,
       {
@@ -25,8 +24,6 @@ export default async function triggerEvent(
     );
   } catch (error) {
     console.log(JSON.stringify(error));
-    sendDiscordMessage(
-      `Error al disparar un evento, ${error.message} - ${error.response.data.error.message}`
-    );
+    sendDiscordMessage(`Error al disparar un evento, ${error.message}}`);
   }
 }
